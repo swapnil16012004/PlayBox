@@ -1,0 +1,16 @@
+# dependencies
+node_modules/
+
+# environment variables
+.env
+
+# testing
+coverage/
+
+# production build
+client/build/
+server/build/
+
+# IDE-specific files
+.vscode/
+.DS_Store
