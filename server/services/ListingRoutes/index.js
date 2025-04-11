@@ -149,6 +149,12 @@ router.get("/:category/:id", async (req, res) => {
       .json({ success: false, message: "Invalid ID format" });
   }
 
+  if (!mongoose.isValidObjectId(id)) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Invalid ID format" });
+  }
+
   try {
     const listing = await Model.findById(id);
     if (!listing) {
@@ -172,6 +178,12 @@ router.get("/:category/:id/video", isLoggedIn, async (req, res) => {
     return res
       .status(400)
       .json({ success: false, message: "Invalid category" });
+  }
+
+  if (!mongoose.isValidObjectId(id)) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Invalid ID format" });
   }
 
   try {
