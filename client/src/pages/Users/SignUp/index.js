@@ -77,7 +77,8 @@ const SignUp = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("/signup", formData);
+      const API_URL = process.env.REACT_APP_API_URL;
+      const response = await axios.post(`${API_URL}/signup`, formData);
       console.log("Signup successful:", response.data);
       navigate("/listings");
     } catch (error) {

@@ -37,6 +37,7 @@ function App() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isManuallyClosed, setIsManuallyClosed] = useState(false);
+  const API_URL = process.env.REACT_APP_API_URL;
 
   const values = {
     currUser,
@@ -103,8 +104,9 @@ function App() {
   useEffect(() => {
     const checkLoginStatus = async () => {
       try {
-        const response = await axios.get("/checkLoginStatusFlag");
+        const response = await axios.get(`${API_URL}/checkLoginStatusFlag`);
         const data = response.data;
+        console.log(response);
         console.log(data);
         if (data.isLoggedIn) {
           setIsLoggedIn(true);
@@ -131,7 +133,7 @@ function App() {
 
   useEffect(() => {
     axios
-      .get("/api/listings")
+      .get(`${API_URL}/api/listings`)
       .then((response) => {
         const data = response.data.listings;
         console.log(data);

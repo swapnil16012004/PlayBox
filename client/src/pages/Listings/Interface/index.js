@@ -15,8 +15,9 @@ const Interface = () => {
 
   useEffect(() => {
     if (category && id) {
+      const API_URL = process.env.REACT_APP_API_URL;
       axios
-        .get(`/api/listings/${category}/${id}`)
+        .get(`${API_URL}/api/listings/${category}/${id}`)
         .then((response) => {
           setListing(response.data.listing || []);
           context.setShowNavbar(false);
@@ -64,9 +65,10 @@ const Interface = () => {
     });
 
     try {
+      const API_URL = process.env.REACT_APP_API_URL;
       if (isInWatchlist) {
         // Remove from watchlist
-        const response = await axios.post("/remove", {
+        const response = await axios.post(`${API_URL}/remove`, {
           userId: currUser.id,
           showId: listing._id,
         });
@@ -95,7 +97,7 @@ const Interface = () => {
         });
       } else {
         // Add to watchlist
-        const response = await axios.post("/add", {
+        const response = await axios.post(`${API_URL}/add`, {
           userId: currUser.id,
           showId: listing._id,
         });

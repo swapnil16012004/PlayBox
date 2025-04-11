@@ -9,10 +9,11 @@ const Category = () => {
   const [listings, setListings] = useState([]);
   const [categoryTitle, setCategoryTitle] = useState("");
   const { category } = useParams();
+  const API_URL = process.env.REACT_APP_API_URL;
   useEffect(() => {
     if (category) {
       axios
-        .get(`/api/listings/${category}`)
+        .get(`${API_URL}/api/listings/${category}`)
         .then((response) => {
           setListings(response.data.listings || []);
           setCategoryTitle(response.data.category);
@@ -24,7 +25,7 @@ const Category = () => {
           console.error("Error in axios inside useEffect:", error);
         });
     }
-  }, [category]);
+  }, [category, context]);
   return (
     <>
       <h1 className="title pt-3 pb-4 sticky-top">

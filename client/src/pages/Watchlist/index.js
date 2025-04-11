@@ -15,7 +15,8 @@ const Watchlist = () => {
 
       try {
         // Fetch all shows from the main listing API
-        const response = await axios.get("/api/listings");
+        const API_URL = process.env.REACT_APP_API_URL;
+        const response = await axios.get(`${API_URL}/api/listings`);
         const allShows = response.data.listings;
 
         const combinedShows = [

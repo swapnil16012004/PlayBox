@@ -49,7 +49,7 @@ const Login = () => {
       <h1 className="col-6 offset-3">Login</h1>
       <div className="col-6 offset-3">
         <form
-          action="/login"
+          action={`${process.env.REACT_APP_API_URL}/login`}
           method="post"
           noValidate
           className="needs-validation"

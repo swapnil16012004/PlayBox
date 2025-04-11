@@ -16,7 +16,11 @@ const AddNewProduct = () => {
     const formData = new FormData(form);
 
     try {
-      const response = await axios.post(form.action, formData);
+      const API_URL = process.env.REACT_APP_API_URL;
+      const response = await axios.post(
+        `${API_URL}/listings/${show}`,
+        formData
+      );
       const data = response.data;
 
       if (data.success) {
@@ -42,7 +46,7 @@ const AddNewProduct = () => {
         <h3>Add a new {show} Show</h3>
         <form
           method="post"
-          action={`/listings/${show}`}
+          action={`${process.env.REACT_APP_API_URL}/listings/${show}`}
           noValidate
           className="needs-validation"
           encType="multipart/form-data"

@@ -28,7 +28,8 @@ const Navbar = () => {
   const handleLogout = async () => {
     try {
       console.log("Logging out...");
-      const response = await axios.post("/logout");
+      const API_URL = process.env.REACT_APP_API_URL;
+      const response = await axios.post(`${API_URL}/logout`);
       const data = response.data;
       console.log("Logout successful, setting state...");
       context.setFlashMessage({ success: true, message: data.message });

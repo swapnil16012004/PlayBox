@@ -8,10 +8,11 @@ const Video = () => {
   const [listing, setListing] = useState([]);
   const { category, id } = useParams();
   const navigate = useNavigate();
+  const API_URL = process.env.REACT_APP_API_URL;
   useEffect(() => {
     if (category) {
       axios
-        .get(`/api/listings/${category}/${id}/video`)
+        .get(`${API_URL}/api/listings/${category}/${id}/video`)
         .then((response) => {
           console.log(response.data);
           setListing(response.data.listing || []);

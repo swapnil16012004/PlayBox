@@ -5,10 +5,11 @@ import Slider from "react-slick";
 
 const Slideshow = () => {
   const context = useContext(MyContext);
+  const API_URL = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     axios
-      .get("/api/listings")
+      .get(`${API_URL}/api/listings`)
       .then((response) => {
         context.setMarvelListings(response.data.listings.marvelListings || []);
         context.setHistoryListings(
