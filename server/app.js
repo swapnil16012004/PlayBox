@@ -18,11 +18,16 @@ const listingRouter = require("./services/ListingRoutes");
 const userRouter = require("./services/UserRoutes");
 
 const MONGO_URL =
-  process.env.ATLASDB_URL || "mongodb://localhost:27017/gostream";
+  process.env.ATLASDB_URL ||
+  "mongodb+srv://pawarswapnil3305:KxaibqIkJvmISEFf@cluster0.ej4mfzo.mongodb.net/gostream?retryWrites=true&w=majority&appName=Cluster0";
 
 main()
   .then(() => {
-    console.log("connected to db");
+    if (process.env.NODE_ENV !== "production") {
+      console.log("Connected to MongoDB");
+    } else {
+      console.log("Server is running in production mode");
+    }
   })
   .catch((err) => {
     console.log(err);
@@ -34,7 +39,7 @@ async function main() {
 app.use(express.json());
 app.use(
   cors({
-    origin: "http://localhost:3000" || "*", // or '*', if you want to allow any origin
+    origin: process.env.FRONTEND_URL || "http://localhost:3000",
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
@@ -58,6 +63,7 @@ const sessionOptions = {
     expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
     maxAge: 7 * 24 * 60 * 60 * 1000,
     httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
   },
   store,
 };
