@@ -15,7 +15,10 @@ const Interface = () => {
 
   useEffect(() => {
     if (category && id) {
-      const API_URL = process.env.REACT_APP_API_URL;
+      const API_URL =
+        process.env.NODE_ENV === "production"
+          ? process.env.REACT_APP_API_URL // Use the production API URL
+          : "http://localhost:8080";
       axios
         .get(`${API_URL}/api/listings/${category}/${id}`)
         .then((response) => {
@@ -65,7 +68,10 @@ const Interface = () => {
     });
 
     try {
-      const API_URL = process.env.REACT_APP_API_URL;
+      const API_URL =
+        process.env.NODE_ENV === "production"
+          ? process.env.REACT_APP_API_URL // Use the production API URL
+          : "http://localhost:8080";
       if (isInWatchlist) {
         // Remove from watchlist
         const response = await axios.post(`${API_URL}/remove`, {

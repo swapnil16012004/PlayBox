@@ -7,6 +7,10 @@ const AddNewProduct = () => {
   const { show } = useParams();
   const navigate = useNavigate();
   const context = useContext(MyContext);
+  const API_URL =
+    process.env.NODE_ENV === "production"
+      ? process.env.REACT_APP_API_URL // Use the production API URL
+      : "http://localhost:8080";
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
@@ -16,7 +20,6 @@ const AddNewProduct = () => {
     const formData = new FormData(form);
 
     try {
-      const API_URL = process.env.REACT_APP_API_URL;
       const response = await axios.post(
         `${API_URL}/listings/${show}`,
         formData
@@ -46,7 +49,7 @@ const AddNewProduct = () => {
         <h3>Add a new {show} Show</h3>
         <form
           method="post"
-          action={`${process.env.REACT_APP_API_URL}/listings/${show}`}
+          action={`${API_URL}/listings/${show}`}
           noValidate
           className="needs-validation"
           encType="multipart/form-data"

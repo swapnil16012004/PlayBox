@@ -36,14 +36,26 @@ async function main() {
   await mongoose.connect(MONGO_URL);
 }
 
-app.use(express.json());
+const allowedOrigins = ["http://localhost:3000", process.env.FRONTEND_URL];
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:3000",
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        console.error(`Blocked by CORS: ${origin}`);
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
   })
 );
+
+app.options("*", cors());
+
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 
@@ -89,6 +101,8 @@ app.use("/", userRouter);
 app.get("/", (req, res) => {
   res.redirect("/listings");
 });
+
+app.get("/favicon.ico", (req, res) => res.status(204).end());
 
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "../client/build", "index.html"));

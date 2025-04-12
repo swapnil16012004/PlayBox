@@ -37,7 +37,10 @@ function App() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isManuallyClosed, setIsManuallyClosed] = useState(false);
-  const API_URL = process.env.REACT_APP_API_URL;
+  const API_URL =
+    process.env.NODE_ENV === "production"
+      ? process.env.REACT_APP_API_URL
+      : "http://localhost:8080";
 
   const values = {
     currUser,
@@ -132,10 +135,12 @@ function App() {
   }, [currUser]);
 
   useEffect(() => {
+    console.log(API_URL);
     axios
       .get(`${API_URL}/api/listings`)
       .then((response) => {
         const data = response.data.listings;
+        console.log(response);
         console.log(data);
         setMarvelListings(data.marvelListings || []);
         setHistoryListings(data.historyListings || []);

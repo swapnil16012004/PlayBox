@@ -6,6 +6,10 @@ import { useNavigate } from "react-router-dom";
 const Login = () => {
   let context = useContext(MyContext);
   const navigate = useNavigate();
+  const API_URL =
+    process.env.NODE_ENV === "production"
+      ? process.env.REACT_APP_API_URL // Use the production API URL
+      : "http://localhost:8080";
   const handleLogin = async (e) => {
     e.preventDefault();
     const form = e.target;
@@ -49,7 +53,7 @@ const Login = () => {
       <h1 className="col-6 offset-3">Login</h1>
       <div className="col-6 offset-3">
         <form
-          action={`${process.env.REACT_APP_API_URL}/login`}
+          action={`${API_URL}/login`}
           method="post"
           noValidate
           className="needs-validation"
