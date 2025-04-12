@@ -99,7 +99,7 @@ app.use("/api/listings", listingRouter);
 app.use("/", userRouter);
 
 app.get("/", (req, res) => {
-  res.redirect("/listings");
+  res.redirect("/api/listings");
 });
 
 app.get("/favicon.ico", (req, res) => res.status(204).end());
