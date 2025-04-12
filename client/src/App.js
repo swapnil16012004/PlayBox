@@ -19,6 +19,7 @@ import Login from "./pages/Users/Login";
 import SignUp from "./pages/Users/SignUp";
 import axios from "axios";
 import Watchlist from "./pages/Watchlist";
+axios.defaults.withCredentials = true;
 
 let MyContext = createContext();
 
@@ -131,8 +132,8 @@ function App() {
       }
     };
 
-    checkLoginStatus();
-  }, [currUser]);
+    setTimeout(() => checkLoginStatus(), 200);
+  }, []);
 
   useEffect(() => {
     console.log(API_URL);
