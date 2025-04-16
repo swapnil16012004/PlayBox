@@ -131,8 +131,10 @@ function App() {
         setLoading(false);
       }
     };
-
-    setTimeout(() => checkLoginStatus(), 200);
+    checkLoginStatus();
+    const timer = setTimeout(() => {
+      checkLoginStatus();
+    }, 500);
   }, []);
 
   useEffect(() => {
