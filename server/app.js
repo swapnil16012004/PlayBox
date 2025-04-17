@@ -80,7 +80,7 @@ const sessionOptions = {
   },
   store,
 };
-
+app.use(express.static(path.join(__dirname, "../client/build")));
 app.use(session(sessionOptions));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -96,8 +96,6 @@ app.use((req, res, next) => {
 
 app.use("/api/listings", listingRouter);
 app.use("/", userRouter);
-
-app.use(express.static(path.join(__dirname, "../client/build")));
 
 app.get("/", (req, res) => {
   res.redirect("/api/listings");
