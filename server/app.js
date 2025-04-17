@@ -75,7 +75,7 @@ const sessionOptions = {
     expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
     maxAge: 7 * 24 * 60 * 60 * 1000,
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: true,
     sameSite: "None",
   },
   store,
@@ -94,10 +94,10 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(express.static(path.join(__dirname, "../client/build")));
-
 app.use("/api/listings", listingRouter);
 app.use("/", userRouter);
+
+app.use(express.static(path.join(__dirname, "../client/build")));
 
 app.get("/", (req, res) => {
   res.redirect("/api/listings");
