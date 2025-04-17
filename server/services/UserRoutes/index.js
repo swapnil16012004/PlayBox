@@ -24,6 +24,28 @@ router.post("/signup", async (req, res) => {
   }
 });
 
+// router.post(
+//   "/login",
+//   saveRedirectUrl,
+//   passport.authenticate("local", {
+//     failureFlash: false,
+//   }),
+//   (req, res) => {
+//     if (!req.user) {
+//       return res
+//         .status(400)
+//         .json({ success: false, message: "Authentication failed" });
+//     }
+//     const { username } = req.body;
+//     res.status(200).json({
+//       message: `Welcome back to PlayBox, ${username}!`,
+//       success: true,
+//       user: req.user,
+//       redirectUrl: res.locals.redirectUrl || "/listings",
+//     });
+//   }
+// );
+
 router.post(
   "/login",
   saveRedirectUrl,
@@ -37,6 +59,9 @@ router.post(
         .json({ success: false, message: "Authentication failed" });
     }
     const { username } = req.body;
+    console.log("Login successful for user:", username);
+    console.log("Session ID:", req.session.id);
+    console.log("Response headers (before sending):", res.getHeaders()); // Log headers
     res.status(200).json({
       message: `Welcome back to PlayBox, ${username}!`,
       success: true,
