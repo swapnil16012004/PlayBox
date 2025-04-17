@@ -24,27 +24,41 @@ router.post("/signup", async (req, res) => {
   }
 });
 
-router.post(
-  "/login",
-  saveRedirectUrl,
-  passport.authenticate("local", {
-    failureFlash: false,
-  }),
-  (req, res) => {
-    if (!req.user) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Authentication failed" });
+// router.post(
+//   "/login",
+//   saveRedirectUrl,
+//   passport.authenticate("local", {
+//     failureFlash: false,
+//   }),
+//   (req, res) => {
+//     if (!req.user) {
+//       return res
+//         .status(400)
+//         .json({ success: false, message: "Authentication failed" });
+//     }
+//     const { username } = req.body;
+//     res.status(200).json({
+//       message: `Welcome back to PlayBox, ${username}!`,
+//       success: true,
+//       user: req.user,
+//       redirectUrl: res.locals.redirectUrl || "/listings",
+//     });
+//   }
+// );
+
+router.post("/login", (req, res) => {
+  console.log("Login attempt received. Session:", req.session); // Check if session is available
+  req.session.userId = "testUser"; // Manually set a session value
+  req.session.save((err) => {
+    // Explicitly save the session
+    if (err) {
+      console.error("Error saving session:", err);
+      return res.status(500).json({ message: "Error saving session" });
     }
-    const { username } = req.body;
-    res.status(200).json({
-      message: `Welcome back to PlayBox, ${username}!`,
-      success: true,
-      user: req.user,
-      redirectUrl: res.locals.redirectUrl || "/listings",
-    });
-  }
-);
+    console.log("Response headers (before sending):", res.getHeaders());
+    res.status(200).json({ message: "Login attempt (check headers)" });
+  });
+});
 
 router.post("/logout", (req, res, next) => {
   req.logout((err) => {
