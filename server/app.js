@@ -94,6 +94,12 @@ passport.deserializeUser(User.deserializeUser());
 app.use((req, res, next) => {
   res.locals.currUser = req.user;
   next();
+
+  app.use((req, res, next) => {
+    console.log("Session ID:", req.sessionID); // Logs the session ID
+    console.log("Session Data:", req.session); // Logs the session data
+    next();
+  });
 });
 
 app.use("/api/listings", listingRouter);
