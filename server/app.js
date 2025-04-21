@@ -93,7 +93,7 @@ app.use((req, res, next) => {
 });
 
 app.use((req, res, next) => {
-  console.log(session);
+  console.log(session.Cookie);
   console.log(sessionOptions);
   next();
 });
