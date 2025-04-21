@@ -14,7 +14,7 @@ const Watchlist = () => {
       if (!context.currUser || context.currUser.watchlist.length === 0) return;
 
       try {
-        const response = await axiosInstance.get(`/api/listings`);
+        const response = await axiosInstance.get(`/listings`);
         const allShows = response.data.listings;
 
         const combinedShows = [

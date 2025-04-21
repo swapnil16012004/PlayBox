@@ -134,7 +134,7 @@ function App() {
 
   useEffect(() => {
     axiosInstance
-      .get(`/api/listings`)
+      .get(`/listings`)
       .then((response) => {
         const data = response.data.listings;
         console.log(response);

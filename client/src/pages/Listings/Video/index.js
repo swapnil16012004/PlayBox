@@ -12,7 +12,7 @@ const Video = () => {
   useEffect(() => {
     if (category) {
       axiosInstance
-        .get(`/api/listings/${category}/${id}/video`)
+        .get(`/listings/${category}/${id}/video`)
         .then((response) => {
           console.log(response.data);
           setListing(response.data.listing || []);

@@ -13,7 +13,7 @@ const Category = () => {
   useEffect(() => {
     if (category) {
       axiosInstance
-        .get(`/api/listings/${category}`)
+        .get(`/listings/${category}`)
         .then((response) => {
           setListings(response.data.listings || []);
           setCategoryTitle(response.data.category);

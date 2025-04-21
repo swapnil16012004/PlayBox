@@ -16,7 +16,7 @@ const Interface = () => {
   useEffect(() => {
     if (category && id) {
       axiosInstance
-        .get(`/api/listings/${category}/${id}`)
+        .get(`/listings/${category}/${id}`)
         .then((response) => {
           setListing(response.data.listing || []);
           context.setShowNavbar(false);

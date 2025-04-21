@@ -8,7 +8,7 @@ const Slideshow = () => {
 
   useEffect(() => {
     axiosInstance
-      .get(`/api/listings`)
+      .get(`/listings`)
       .then((response) => {
         context.setMarvelListings(response.data.listings.marvelListings || []);
         context.setHistoryListings(
