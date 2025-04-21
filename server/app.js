@@ -98,6 +98,15 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use((req, res, next) => {
+  const originalSend = res.send;
+  res.send = function (body) {
+    console.log("Response Headers:", res.getHeaders());
+    originalSend.call(this, body);
+  };
+  next();
+});
+
 app.use("/api/listings", listingRouter);
 app.use("/", userRouter);
 
