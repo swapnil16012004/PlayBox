@@ -37,6 +37,7 @@ router.post(
         .json({ success: false, message: "Authentication failed" });
     }
     const { username } = req.body;
+    console.log("Set-Cookie Header:", res.getHeaders()["set-cookie"]);
     res.status(200).json({
       message: `Welcome back to PlayBox, ${username}!`,
       success: true,
