@@ -31,18 +31,24 @@ router.post(
     failureFlash: false,
   }),
   (req, res) => {
-    if (!req.user) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Authentication failed" });
-    }
-    const { username } = req.body;
-    console.log("Set-Cookie Header:", res.getHeaders()["set-cookie"]);
-    res.status(200).json({
-      message: `Welcome back to PlayBox, ${username}!`,
-      success: true,
-      user: req.user,
-      redirectUrl: res.locals.redirectUrl || "/listings",
+    req.session.save((err) => {
+      if (err) {
+        console.error("Error saving session:", err);
+        return res.status(500).json({ message: "Internal Server Error" });
+      }
+      if (!req.user) {
+        return res
+          .status(400)
+          .json({ success: false, message: "Authentication failed" });
+      }
+      const { username } = req.body;
+      console.log("Set-Cookie Header:", res.getHeaders()["set-cookie"]);
+      res.status(200).json({
+        message: `Welcome back to PlayBox, ${username}!`,
+        success: true,
+        user: req.user,
+        redirectUrl: res.locals.redirectUrl || "/listings",
+      });
     });
   }
 );

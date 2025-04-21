@@ -67,8 +67,6 @@ const store = MongoStore.create({
   touchAfter: 24 * 3600,
 });
 
-const isProduction = process.env.NODE_ENV === "production";
-
 const sessionOptions = {
   secret: process.env.SECRET,
   resave: false,
@@ -77,8 +75,8 @@ const sessionOptions = {
     expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
     maxAge: 7 * 24 * 60 * 60 * 1000,
     httpOnly: true,
-    secure: isProduction,
-    sameSite: isProduction ? "None" : "Lax",
+    secure: true,
+    sameSite: "None",
   },
   store,
 };
