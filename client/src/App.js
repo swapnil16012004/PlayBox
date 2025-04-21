@@ -108,7 +108,7 @@ function App() {
   useEffect(() => {
     const checkLoginStatus = async () => {
       try {
-        const response = await axios.get(`${API_URL}/checkLoginStatusFlag`);
+        const response = await axios.get(`/checkLoginStatusFlag`);
         const data = response.data;
         console.log(response);
         console.log(data);
@@ -140,7 +140,7 @@ function App() {
   useEffect(() => {
     console.log(API_URL);
     axios
-      .get(`${API_URL}/api/listings`)
+      .get(`/api/listings`)
       .then((response) => {
         const data = response.data.listings;
         console.log(response);

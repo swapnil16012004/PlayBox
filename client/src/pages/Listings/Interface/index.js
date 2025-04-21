@@ -15,12 +15,12 @@ const Interface = () => {
 
   useEffect(() => {
     if (category && id) {
-      const API_URL =
-        process.env.NODE_ENV === "production"
-          ? process.env.REACT_APP_API_URL // Use the production API URL
-          : "http://localhost:8080";
+      // const API_URL =
+      //   process.env.NODE_ENV === "production"
+      //     ? process.env.REACT_APP_API_URL
+      //     : "http://localhost:8080";
       axios
-        .get(`${API_URL}/api/listings/${category}/${id}`)
+        .get(`/api/listings/${category}/${id}`)
         .then((response) => {
           setListing(response.data.listing || []);
           context.setShowNavbar(false);
@@ -68,13 +68,13 @@ const Interface = () => {
     });
 
     try {
-      const API_URL =
-        process.env.NODE_ENV === "production"
-          ? process.env.REACT_APP_API_URL // Use the production API URL
-          : "http://localhost:8080";
+      // const API_URL =
+      //   process.env.NODE_ENV === "production"
+      //     ? process.env.REACT_APP_API_URL // Use the production API URL
+      //     : "http://localhost:8080";
       if (isInWatchlist) {
         // Remove from watchlist
-        const response = await axios.post(`${API_URL}/remove`, {
+        const response = await axios.post(`/remove`, {
           userId: currUser.id,
           showId: listing._id,
         });
@@ -103,7 +103,7 @@ const Interface = () => {
         });
       } else {
         // Add to watchlist
-        const response = await axios.post(`${API_URL}/add`, {
+        const response = await axios.post(`/add`, {
           userId: currUser.id,
           showId: listing._id,
         });

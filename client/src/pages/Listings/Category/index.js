@@ -9,14 +9,14 @@ const Category = () => {
   const [listings, setListings] = useState([]);
   const [categoryTitle, setCategoryTitle] = useState("");
   const { category } = useParams();
-  const API_URL =
-    process.env.NODE_ENV === "production"
-      ? process.env.REACT_APP_API_URL // Use the production API URL
-      : "http://localhost:8080";
+  // const API_URL =
+  //   process.env.NODE_ENV === "production"
+  //     ? process.env.REACT_APP_API_URL
+  //     : "http://localhost:8080";
   useEffect(() => {
     if (category) {
       axios
-        .get(`${API_URL}/api/listings/${category}`)
+        .get(`/api/listings/${category}`)
         .then((response) => {
           setListings(response.data.listings || []);
           setCategoryTitle(response.data.category);

@@ -8,14 +8,14 @@ const Video = () => {
   const [listing, setListing] = useState([]);
   const { category, id } = useParams();
   const navigate = useNavigate();
-  const API_URL =
-    process.env.NODE_ENV === "production"
-      ? process.env.REACT_APP_API_URL // Use the production API URL
-      : "http://localhost:8080";
+  // const API_URL =
+  //   process.env.NODE_ENV === "production"
+  //     ? process.env.REACT_APP_API_URL
+  //     : "http://localhost:8080";
   useEffect(() => {
     if (category) {
       axios
-        .get(`${API_URL}/api/listings/${category}/${id}/video`)
+        .get(`/api/listings/${category}/${id}/video`)
         .then((response) => {
           console.log(response.data);
           setListing(response.data.listing || []);

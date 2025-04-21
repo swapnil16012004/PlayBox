@@ -28,11 +28,11 @@ const Navbar = () => {
   const handleLogout = async () => {
     try {
       console.log("Logging out...");
-      const API_URL =
-        process.env.NODE_ENV === "production"
-          ? process.env.REACT_APP_API_URL // Use the production API URL
-          : "http://localhost:8080";
-      const response = await axios.post(`${API_URL}/logout`);
+      // const API_URL =
+      //   process.env.NODE_ENV === "production"
+      //     ? process.env.REACT_APP_API_URL // Use the production API URL
+      //     : "http://localhost:8080";
+      const response = await axios.post(`/logout`);
       const data = response.data;
       console.log("Logout successful, setting state...");
       context.setFlashMessage({ success: true, message: data.message });
