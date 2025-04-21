@@ -92,6 +92,12 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use((req, res, next) => {
+  console.log(session);
+  console.log(sessionOptions);
+  next();
+});
+
 app.use("/api/listings", listingRouter);
 app.use("/", userRouter);
 
