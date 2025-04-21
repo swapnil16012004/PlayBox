@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { MyContext } from "../../App";
-import axios from "axios";
+import axiosInstance from "../../axiosConfig";
 import { Link } from "react-router-dom";
 
 import React from "react";
@@ -32,7 +32,7 @@ const Navbar = () => {
       //   process.env.NODE_ENV === "production"
       //     ? process.env.REACT_APP_API_URL // Use the production API URL
       //     : "http://localhost:8080";
-      const response = await axios.post(`/logout`);
+      const response = await axiosInstance.post(`/logout`);
       const data = response.data;
       console.log("Logout successful, setting state...");
       context.setFlashMessage({ success: true, message: data.message });

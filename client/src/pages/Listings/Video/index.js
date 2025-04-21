@@ -1,4 +1,4 @@
-import axios from "axios";
+import axiosInstance from "../../../axiosConfig";
 import { useContext, useEffect, useState } from "react";
 import { MyContext } from "../../../App";
 import { useParams, useNavigate } from "react-router-dom";
@@ -8,13 +8,10 @@ const Video = () => {
   const [listing, setListing] = useState([]);
   const { category, id } = useParams();
   const navigate = useNavigate();
-  // const API_URL =
-  //   process.env.NODE_ENV === "production"
-  //     ? process.env.REACT_APP_API_URL
-  //     : "http://localhost:8080";
+
   useEffect(() => {
     if (category) {
-      axios
+      axiosInstance
         .get(`/api/listings/${category}/${id}/video`)
         .then((response) => {
           console.log(response.data);

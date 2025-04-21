@@ -1,15 +1,12 @@
 import { useContext, useEffect } from "react";
 import { MyContext } from "../../../App";
-import axios from "axios";
+import axiosInstance from "../../../axiosConfig";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   let context = useContext(MyContext);
   const navigate = useNavigate();
-  // const API_URL =
-  //   process.env.NODE_ENV === "production"
-  //     ? process.env.REACT_APP_API_URL // Use the production API URL
-  //     : "http://localhost:8080";
+
   const handleLogin = async (e) => {
     e.preventDefault();
     const form = e.target;
@@ -19,7 +16,7 @@ const Login = () => {
       password: form.password.value,
     };
     try {
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         form.action,
         new URLSearchParams(formData).toString(),
         {

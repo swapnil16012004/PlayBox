@@ -17,9 +17,8 @@ import Interface from "./pages/Listings/Interface";
 import Video from "./pages/Listings/Video";
 import Login from "./pages/Users/Login";
 import SignUp from "./pages/Users/SignUp";
-import axios from "axios";
+import axiosInstance from "./axiosConfig";
 import Watchlist from "./pages/Watchlist";
-axios.defaults.withCredentials = true;
 
 let MyContext = createContext();
 
@@ -38,10 +37,6 @@ function App() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isManuallyClosed, setIsManuallyClosed] = useState(false);
-  const API_URL =
-    process.env.NODE_ENV === "production"
-      ? process.env.REACT_APP_API_URL
-      : "http://localhost:8080";
 
   const values = {
     currUser,
@@ -108,7 +103,7 @@ function App() {
   useEffect(() => {
     const checkLoginStatus = async () => {
       try {
-        const response = await axios.get(`/checkLoginStatusFlag`);
+        const response = await axiosInstance.get(`/checkLoginStatusFlag`);
         const data = response.data;
         console.log(response);
         console.log(data);
@@ -138,8 +133,7 @@ function App() {
   }, []);
 
   useEffect(() => {
-    console.log(API_URL);
-    axios
+    axiosInstance
       .get(`/api/listings`)
       .then((response) => {
         const data = response.data.listings;

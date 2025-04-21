@@ -1,16 +1,12 @@
 import { useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { MyContext } from "../../../App";
-import axios from "axios";
+import axiosInstance from "../../../axiosConfig";
 
 const AddNewProduct = () => {
   const { show } = useParams();
   const navigate = useNavigate();
   const context = useContext(MyContext);
-  // const API_URL =
-  //   process.env.NODE_ENV === "production"
-  //     ? process.env.REACT_APP_API_URL
-  //     : "http://localhost:8080";
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
@@ -20,7 +16,7 @@ const AddNewProduct = () => {
     const formData = new FormData(form);
 
     try {
-      const response = await axios.post(`/listings/${show}`, formData);
+      const response = await axiosInstance.post(`/listings/${show}`, formData);
       const data = response.data;
 
       if (data.success) {

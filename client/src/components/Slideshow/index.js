@@ -1,17 +1,13 @@
 import { useContext, useEffect } from "react";
 import { MyContext } from "../../App";
-import axios from "axios";
+import axiosInstance from "../../axiosConfig";
 import Slider from "react-slick";
 
 const Slideshow = () => {
   const context = useContext(MyContext);
-  // const API_URL =
-  //   process.env.NODE_ENV === "production"
-  //     ? process.env.REACT_APP_API_URL // Use the production API URL
-  //     : "http://localhost:8080";
 
   useEffect(() => {
-    axios
+    axiosInstance
       .get(`/api/listings`)
       .then((response) => {
         context.setMarvelListings(response.data.listings.marvelListings || []);

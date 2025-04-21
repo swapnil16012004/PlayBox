@@ -1,7 +1,7 @@
 import { use, useContext, useEffect, useState } from "react";
 import { MyContext } from "../../App";
 
-import axios from "axios";
+import axiosInstance from "../../axiosConfig";
 import Card from "../../components/Card";
 
 const Watchlist = () => {
@@ -14,12 +14,7 @@ const Watchlist = () => {
       if (!context.currUser || context.currUser.watchlist.length === 0) return;
 
       try {
-        // Fetch all shows from the main listing API
-        // const API_URL =
-        //   process.env.NODE_ENV === "production"
-        //     ? process.env.REACT_APP_API_URL // Use the production API URL
-        //     : "http://localhost:8080";
-        const response = await axios.get(`/api/listings`);
+        const response = await axiosInstance.get(`/api/listings`);
         const allShows = response.data.listings;
 
         const combinedShows = [

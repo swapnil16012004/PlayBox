@@ -1,4 +1,4 @@
-import axios from "axios";
+import axiosInstance from "../../../axiosConfig";
 import { useContext, useEffect, useState } from "react";
 import { MyContext } from "../../../App";
 import { Link, useParams } from "react-router-dom";
@@ -15,11 +15,7 @@ const Interface = () => {
 
   useEffect(() => {
     if (category && id) {
-      // const API_URL =
-      //   process.env.NODE_ENV === "production"
-      //     ? process.env.REACT_APP_API_URL
-      //     : "http://localhost:8080";
-      axios
+      axiosInstance
         .get(`/api/listings/${category}/${id}`)
         .then((response) => {
           setListing(response.data.listing || []);
@@ -68,13 +64,9 @@ const Interface = () => {
     });
 
     try {
-      // const API_URL =
-      //   process.env.NODE_ENV === "production"
-      //     ? process.env.REACT_APP_API_URL // Use the production API URL
-      //     : "http://localhost:8080";
       if (isInWatchlist) {
         // Remove from watchlist
-        const response = await axios.post(`/remove`, {
+        const response = await axiosInstance.post(`/remove`, {
           userId: currUser.id,
           showId: listing._id,
         });
@@ -103,7 +95,7 @@ const Interface = () => {
         });
       } else {
         // Add to watchlist
-        const response = await axios.post(`/add`, {
+        const response = await axiosInstance.post(`/add`, {
           userId: currUser.id,
           showId: listing._id,
         });

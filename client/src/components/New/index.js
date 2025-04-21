@@ -1,27 +1,8 @@
 import { useContext, useEffect } from "react";
 import { MyContext } from "../../App";
-import axios from "axios";
 
 const New = () => {
   let context = useContext(MyContext);
-  // useEffect(() => {
-  //   axios
-  //     .get("/api/listings")
-  //     .then((response) => {
-  //       context.setMarvelListings(response.data.listings.marvelListings || []);
-  //       context.setHistoryListings(
-  //         response.data.listings.historyListings || []
-  //       );
-  //       context.setPopularMovieListings(
-  //         response.data.listings.popularMovieListings || []
-  //       );
-  //       context.setComedyListings(response.data.listings.comedyListings || []);
-  //       context.setKidListings(response.data.listings.kidListings || []);
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error in axios inside useEffect:", error);
-  //     });
-  // }, []);
 
   return (
     <div className="new">

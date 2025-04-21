@@ -56,7 +56,7 @@
 // export default SignUp;
 
 import { useState } from "react";
-import axios from "axios";
+import axiosInstance from "../../../axiosConfig";
 import { useNavigate } from "react-router-dom";
 
 const SignUp = () => {
@@ -77,11 +77,7 @@ const SignUp = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // const API_URL =
-      //   process.env.NODE_ENV === "production"
-      //     ? process.env.REACT_APP_API_URL // Use the production API URL
-      //     : "http://localhost:8080";
-      const response = await axios.post(`/signup`, formData);
+      const response = await axiosInstance.post(`/signup`, formData);
       console.log("Signup successful:", response.data);
       navigate("/listings");
     } catch (error) {
