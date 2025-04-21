@@ -41,7 +41,7 @@ app.use(
   cors({
     origin: (origin, callback) => {
       if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
+        callback(null, origin);
       } else {
         console.error(`Blocked by CORS: ${origin}`);
         callback(new Error("Not allowed by CORS"));
@@ -52,8 +52,6 @@ app.use(
     credentials: true,
   })
 );
-
-app.options("*", cors());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -91,12 +89,6 @@ passport.deserializeUser(User.deserializeUser());
 
 app.use((req, res, next) => {
   res.locals.currUser = req.user;
-  next();
-});
-
-app.use((req, res, next) => {
-  console.log("Session ID:", req.sessionID); // Logs the session ID
-  console.log("Session Data:", req.session); // Logs the session data
   next();
 });
 

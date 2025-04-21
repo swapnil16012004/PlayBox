@@ -16,8 +16,12 @@ const Login = () => {
       password: form.password.value,
     };
     try {
+      console.log(
+        "Using axiosInstance for login:",
+        axiosInstance.defaults.baseURL
+      );
       const response = await axiosInstance.post(
-        form.action,
+        "/login",
         new URLSearchParams(formData).toString(),
         {
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
