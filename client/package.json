@@ -2,7 +2,7 @@
   "engines": {
     "node": ">=16.20.2"
   },
-  "name": "playbox",
+  "name": "playbox-client",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
