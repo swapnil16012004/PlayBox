@@ -106,7 +106,7 @@ const sessionOptions = {
   },
   store,
 };
-app.use(express.static(path.join(__dirname, "../client/build")));
+
 app.use(session(sessionOptions));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -128,10 +128,6 @@ app.get("/", (req, res) => {
 });
 
 app.get("/favicon.ico", (req, res) => res.status(204).end());
-
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../client/build", "index.html"));
-});
 
 app.use((err, req, res, next) => {
   let { statusCode = 500, message = "Something went wrong!" } = err;
