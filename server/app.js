@@ -36,14 +36,42 @@ async function main() {
   await mongoose.connect(MONGO_URL);
 }
 
-const allowedOrigins = ["http://localhost:3000", process.env.FRONTEND_URL];
+const allowedOrigins = [
+  "http://localhost:3000",
+  "http://localhost:8080",
+  process.env.FRONTEND_URL,
+];
+// app.use(
+//   cors({
+//     origin: (origin, callback) => {
+//       console.log("Request Origin:", origin);
+//       console.log("Allowed Origins:", allowedOrigins);
+//       if (!origin || allowedOrigins.includes(origin)) {
+//         callback(null, true);
+//       } else {
+//         console.error(`Blocked by CORS: ${origin}`);
+//         callback(new Error("Not allowed by CORS"));
+//       }
+//     },
+//     methods: ["GET", "POST", "PUT", "DELETE"],
+//     allowedHeaders: ["Content-Type", "Authorization"],
+//     credentials: true,
+//   })
+// );
+
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
+      // Normalize the origin by removing trailing slashes
+      const normalizedOrigin = origin ? origin.replace(/\/$/, "") : origin;
+
+      console.log("Request Origin:", normalizedOrigin);
+      console.log("Allowed Origins:", allowedOrigins);
+
+      if (!normalizedOrigin || allowedOrigins.includes(normalizedOrigin)) {
         callback(null, true);
       } else {
-        console.error(`Blocked by CORS: ${origin}`);
+        console.error(`Blocked by CORS: ${normalizedOrigin}`);
         callback(new Error("Not allowed by CORS"));
       }
     },
