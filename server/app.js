@@ -12,7 +12,7 @@ const User = require("./models/UserModel");
 const methodOverride = require("method-override");
 const mongoose = require("mongoose");
 const MongoStore = require("connect-mongo");
-// const cors = require("cors");
+const cors = require("cors");
 
 const listingRouter = require("./services/ListingRoutes");
 const userRouter = require("./services/UserRoutes");
@@ -36,22 +36,22 @@ async function main() {
   await mongoose.connect(MONGO_URL);
 }
 
-// const allowedOrigins = ["http://localhost:3000", process.env.FRONTEND_URL];
-// app.use(
-//   cors({
-//     origin: (origin, callback) => {
-//       if (!origin || allowedOrigins.includes(origin)) {
-//         callback(null, origin);
-//       } else {
-//         console.error(`Blocked by CORS: ${origin}`);
-//         callback(new Error("Not allowed by CORS"));
-//       }
-//     },
-//     methods: ["GET", "POST", "PUT", "DELETE"],
-//     allowedHeaders: ["Content-Type", "Authorization"],
-//     credentials: true,
-//   })
-// );
+const allowedOrigins = ["http://localhost:3000", process.env.FRONTEND_URL];
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        console.error(`Blocked by CORS: ${origin}`);
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
+);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
