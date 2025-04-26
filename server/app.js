@@ -36,20 +36,25 @@ async function main() {
   await mongoose.connect(MONGO_URL);
 }
 
-const allowedOrigins = [
-  "http://localhost:3000",
-  "http://localhost:8080",
-  process.env.FRONTEND_URL,
-];
+// const allowedOrigins = [
+//   "http://localhost:3000",
+//   "http://localhost:8080",
+//   process.env.FRONTEND_URL,
+// ];
+
 // app.use(
 //   cors({
 //     origin: (origin, callback) => {
-//       console.log("Request Origin:", origin);
+//       // Normalize the origin by removing trailing slashes
+//       const normalizedOrigin = origin ? origin.replace(/\/$/, "") : origin;
+
+//       console.log("Request Origin:", normalizedOrigin);
 //       console.log("Allowed Origins:", allowedOrigins);
-//       if (!origin || allowedOrigins.includes(origin)) {
+
+//       if (!normalizedOrigin || allowedOrigins.includes(normalizedOrigin)) {
 //         callback(null, true);
 //       } else {
-//         console.error(`Blocked by CORS: ${origin}`);
+//         console.error(`Blocked by CORS: ${normalizedOrigin}`);
 //         callback(new Error("Not allowed by CORS"));
 //       }
 //     },
@@ -61,23 +66,10 @@ const allowedOrigins = [
 
 app.use(
   cors({
-    origin: (origin, callback) => {
-      // Normalize the origin by removing trailing slashes
-      const normalizedOrigin = origin ? origin.replace(/\/$/, "") : origin;
-
-      console.log("Request Origin:", normalizedOrigin);
-      console.log("Allowed Origins:", allowedOrigins);
-
-      if (!normalizedOrigin || allowedOrigins.includes(normalizedOrigin)) {
-        callback(null, true);
-      } else {
-        console.error(`Blocked by CORS: ${normalizedOrigin}`);
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
+    origin: "*", // Allow all origins temporarily
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
+    credentials: true, // Allow cookies and credentials
   })
 );
 
