@@ -1,10 +1,10 @@
 import axiosInstance from "../../../axiosConfig";
 import { useContext, useEffect, useState } from "react";
 import { MyContext } from "../../../App";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Navigate } from "react-router-dom";
 
 const Video = () => {
-  let context = useContext(MyContext);
+  const context = useContext(MyContext);
   const [listing, setListing] = useState([]);
   const { category, id } = useParams();
   const navigate = useNavigate();
@@ -26,14 +26,14 @@ const Video = () => {
               success: false,
               message: error.response.data.message,
             });
-
-            navigate("/login");
+            // navigate("/login");
           } else {
             console.error("An error occurred:", error);
           }
         });
     }
-  }, [category]);
+  }, [category, id]);
+
   return (
     <>
       {typeof listing.video === "string" && listing.video ? (

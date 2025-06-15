@@ -1,140 +1,143 @@
 const express = require("express");
 const router = express.Router();
-const passport = require("passport");
-const { saveRedirectUrl } = require("../../middleware.js");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 const User = require("../../models/UserModel");
+const { isLoggedIn } = require("../../middleware");
 
+// Helper to create JWT
+const generateToken = (user) => {
+  return jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+    expiresIn: "7d",
+  });
+};
+
+// SIGNUP
 router.post("/signup", async (req, res) => {
   try {
-    let { username, email, password } = req.body;
-    const newUser = new User({ email, username });
-    const registeredUser = await User.register(newUser, password);
-    console.log(registeredUser);
-    req.login(registeredUser, (err) => {
-      if (err) {
-        return res.status(500).json({ message: "Login failed", error: err });
-      }
-      res.status(201).json({
-        message: `Dear ${username}, welcome to GoStream!`,
-        user: registeredUser,
-      });
+    const { username, email, password } = req.body;
+
+    const existingUser = await User.findOne({ email });
+    if (existingUser)
+      return res.status(400).json({ message: "Email already registered." });
+
+    const hashedPassword = await bcrypt.hash(password, 12);
+    const newUser = new User({ username, email, password: hashedPassword });
+    await newUser.save();
+
+    const token = generateToken(newUser);
+    res.status(201).json({
+      message: `Dear ${username}, welcome to PlayBox!`,
+      user: newUser,
+      token,
     });
   } catch (e) {
     res.status(400).json({ message: "Signup failed", error: e.message });
   }
 });
 
-router.post(
-  "/login",
-  saveRedirectUrl,
-  passport.authenticate("local", {
-    failureFlash: false,
-  }),
-  (req, res) => {
-    req.session.save((err) => {
-      if (err) {
-        console.error("Error saving session:", err);
-        return res.status(500).json({ message: "Internal Server Error" });
-      }
-      if (!req.user) {
-        return res
-          .status(400)
-          .json({ success: false, message: "Authentication failed" });
-      }
-      const { username } = req.body;
-      console.log("Set-Cookie Header:", res.getHeaders()["set-cookie"]);
-      res.status(200).json({
-        message: `Welcome back to PlayBox, ${username}!`,
-        success: true,
-        user: req.user,
-        redirectUrl: res.locals.redirectUrl || "/listings",
-      });
-    });
-  }
-);
+// LOGIN
+router.post("/login", async (req, res) => {
+  const { username, password } = req.body;
+  console.log("Login request:", username, password); // ✅ Debug log
 
-router.post("/logout", (req, res, next) => {
-  req.logout((err) => {
-    if (err) {
-      return res.status(500).json({ message: "Logout failed", success: false });
-    }
-    res.status(200).json({ success: true, message: "You are logged out!" });
-  });
-});
-
-router.get("/checkLoginStatusFlag", (req, res) => {
   try {
-    if (req.user) {
-      res.json({ isLoggedIn: true, user: req.user });
-    } else {
-      res.json({ isLoggedIn: false });
-    }
+    const user = await User.findOne({ username });
+    console.log("User from DB:", user); // ✅ Check if user is found
+
+    if (!user)
+      return res.status(400).json({ message: "Invalid username or password." });
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    console.log("Password match:", isMatch); // ✅ Confirm password match
+
+    if (!isMatch)
+      return res.status(400).json({ message: "Invalid username or password." });
+
+    const token = generateToken(user);
+    console.log("Token generated:", token); // ✅ Debug token
+
+    res.status(200).json({
+      message: `Welcome back to PlayBox, ${user.username}!`,
+      user,
+      token,
+    });
   } catch (err) {
-    console.error("Error checking login status:", err);
-    res.status(500).json({
-      success: false,
-      message: "Internal server error",
-      error: err.message,
-    });
+    console.error("Login failed:", err.message);
+    res.status(500).json({ message: "Login failed", error: err.message });
   }
 });
 
-// Add a show to the watchlist
-router.post("/add", async (req, res) => {
-  const { userId, showId } = req.body;
+// LOGOUT (client just removes token)
+router.post("/logout", (req, res) => {
+  res.status(200).json({ message: "Logged out. Remove token on client." });
+});
 
-  if (!userId || !showId) {
-    return res.status(400).json({ message: "Missing userId or showId" });
+// CHECK LOGIN STATUS
+router.get("/checkLoginStatusFlag", isLoggedIn, (req, res) => {
+  if (req.user) {
+    res.json({ isLoggedIn: true, user: req.user });
+  } else {
+    res.json({ isLoggedIn: false });
+  }
+});
+
+// Add to Watchlist (protected)
+router.post("/add", isLoggedIn, async (req, res) => {
+  const { showId } = req.body;
+  const user = req.user;
+
+  if (!showId) {
+    return res.status(400).json({ message: "Missing showId" });
   }
 
   try {
-    console.log("req.body", req.body);
-    console.log("User ID:", userId);
-    console.log("Show ID:", showId);
+    const dbUser = await User.findById(user.id);
+    if (!dbUser) return res.status(404).json({ message: "User not found" });
 
-    const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ message: "User not found" });
-
-    if (!user.watchlist.map(String).includes(showId)) {
-      user.watchlist.push(showId);
-      await user.save({ validateModifiedOnly: true });
+    if (!dbUser.watchlist.map(String).includes(showId)) {
+      dbUser.watchlist.push(showId);
+      await dbUser.save({ validateModifiedOnly: true });
     }
 
-    res
-      .status(200)
-      .json({ message: "Show added to watchlist", watchlist: user.watchlist });
+    res.status(200).json({
+      message: "Show added to watchlist",
+      watchlist: dbUser.watchlist,
+    });
   } catch (error) {
-    console.error("Error in /add route:", error);
     res.status(500).json({ message: "Error adding to watchlist", error });
   }
 });
 
-// Remove a show from the watchlist
-router.post("/remove", async (req, res) => {
-  const { userId, showId } = req.body;
+// Remove from Watchlist (protected)
+router.post("/remove", isLoggedIn, async (req, res) => {
+  const { showId } = req.body;
+  const user = req.user;
 
-  if (!userId || !showId) {
-    return res.status(400).json({ message: "Missing userId or showId" });
+  if (!showId) {
+    return res.status(400).json({ message: "Missing showId" });
   }
 
   try {
-    const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ message: "User not found" });
+    const dbUser = await User.findById(user.id);
+    if (!dbUser) return res.status(404).json({ message: "User not found" });
 
-    user.watchlist = user.watchlist.filter((id) => id.toString() !== showId);
-    await user.save({ validateModifiedOnly: true });
+    dbUser.watchlist = dbUser.watchlist.filter(
+      (id) => id.toString() !== showId
+    );
+    await dbUser.save({ validateModifiedOnly: true });
 
     res.status(200).json({
       message: "Show removed from watchlist",
-      watchlist: user.watchlist,
+      watchlist: dbUser.watchlist,
     });
   } catch (error) {
     res.status(500).json({ message: "Error removing from watchlist", error });
   }
 });
 
-// Fetch the user's watchlist
-router.get("/:userId", async (req, res) => {
+// Fetch Watchlist (protected)
+router.get("/:userId", isLoggedIn, async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
     if (!user) return res.status(404).json({ message: "User not found" });

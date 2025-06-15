@@ -4,22 +4,22 @@ import axiosInstance from "../../../axiosConfig";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-  let context = useContext(MyContext);
+  const context = useContext(MyContext);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     const form = e.target;
-    context.setIsSubmitting(true);
     const formData = {
       username: form.username.value,
       password: form.password.value,
     };
+
+    console.log("Trying login with:", formData.username, formData.password);
+
+    context.setIsSubmitting(true);
+
     try {
-      console.log(
-        "Using axiosInstance for login:",
-        axiosInstance.defaults.baseURL
-      );
       const response = await axiosInstance.post(
         "/login",
         new URLSearchParams(formData).toString(),
@@ -27,16 +27,32 @@ const Login = () => {
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
         }
       );
+
       const data = response.data;
-      context.setFlashMessage({ success: true, message: data.message });
-      context.setCurrUser(data.user.username);
+
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("currUser", JSON.stringify(data.user));
+
+      context.setCurrUser({
+        username: data.user.username,
+        id: data.user._id,
+        watchlist: data.user.watchlist || [],
+      });
+
       context.setIsLoggedIn(true);
+      context.setFlashMessage({ success: true, message: data.message });
+
       setTimeout(() => {
         navigate(data.redirectUrl || "/listings");
       }, 100);
-      console.log(context.flashMessage);
     } catch (error) {
       console.error("Login error:", error.response?.data || error.message);
+      context.setFlashMessage({
+        success: false,
+        message: error.response?.data?.message || "Login failed",
+      });
+    } finally {
+      context.setIsSubmitting(false);
     }
   };
 
@@ -45,16 +61,15 @@ const Login = () => {
       const timer = setTimeout(() => {
         context.setFlashMessage(null);
       }, 5000);
-
       return () => clearTimeout(timer);
     }
   }, [context.flashMessage]);
+
   return (
     <div className="row mt-5 login-color">
       <h1 className="col-6 offset-3">Login</h1>
       <div className="col-6 offset-3">
         <form
-          action={`/login`}
           method="post"
           noValidate
           className="needs-validation"
@@ -84,7 +99,12 @@ const Login = () => {
               required
             />
           </div>
-          <button className="btn bttn btn-outlined">Login</button>
+          <button
+            className="btn bttn btn-outlined"
+            disabled={context.isSubmitting}
+          >
+            {context.isSubmitting ? "Logging in..." : "Login"}
+          </button>
         </form>
       </div>
     </div>

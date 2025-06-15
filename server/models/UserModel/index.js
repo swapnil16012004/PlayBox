@@ -1,7 +1,6 @@
-const { required } = require("joi");
 const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
 const Schema = mongoose.Schema;
-const passportLocalMongoose = require("passport-local-mongoose");
 
 const userSchema = new Schema({
   email: {
@@ -9,8 +8,15 @@ const userSchema = new Schema({
     required: true,
     unique: true,
   },
-  username: { type: String, required: true, unique: true },
-  password: { type: String },
+  username: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  password: {
+    type: String,
+    required: true,
+  },
   watchlist: {
     type: [String],
     validate: {
@@ -22,5 +28,9 @@ const userSchema = new Schema({
   },
 });
 
-userSchema.plugin(passportLocalMongoose);
+// Optional: add a method to compare passwords (if you want)
+userSchema.methods.comparePassword = async function (candidatePassword) {
+  return await bcrypt.compare(candidatePassword, this.password);
+};
+
 module.exports = mongoose.model("User", userSchema);

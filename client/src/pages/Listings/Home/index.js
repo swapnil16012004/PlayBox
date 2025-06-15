@@ -9,10 +9,6 @@ import Card from "../../../components/Card";
 const Home = () => {
   const context = useContext(MyContext);
 
-  if (context.loading) {
-    return <div>Loading...</div>;
-  }
-
   useEffect(() => {
     context.setShowNavbar(true);
     context.setShowFooter(true);
@@ -24,11 +20,15 @@ const Home = () => {
       context.setLoading(false);
       window.scrollTo(0, 0);
     };
-  }, [context.setShowFooter, context.setShowNavbar]);
+  }, [context]);
+
+  if (context.loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <>
-      {context.currUser && context.currUser.username === "admin" && <New />}
+      {context.currUser?.username === "admin" && <New />}
 
       <Slideshow />
       <div className="container">
@@ -56,12 +56,7 @@ const Home = () => {
                   key={item._id}
                   className="col-sm-12 col-md-6 col-lg-2 mb-4 mt-2 card-body"
                 >
-                  <Card
-                    _id={item._id}
-                    image={item.image}
-                    title={item.title}
-                    category={item.category}
-                  />
+                  <Card {...item} />
                   <h2 className="card-title">{item.title}</h2>
                 </div>
               ))}
@@ -91,19 +86,14 @@ const Home = () => {
                   key={item._id}
                   className="col-sm-12 col-md-6 col-lg-2 mb-4 mt-2 card-body"
                 >
-                  <Card
-                    _id={item._id}
-                    image={item.image}
-                    title={item.title}
-                    category={item.category}
-                  />
+                  <Card {...item} />
                   <h2 className="card-title">{item.title}</h2>
                 </div>
               ))}
             </>
           )}
 
-          {/* popularMovieListings Listings */}
+          {/* Popular Movie Listings */}
           {context.popularMovieListings?.length > 0 && (
             <>
               <Link
@@ -126,19 +116,14 @@ const Home = () => {
                   key={item._id}
                   className="col-sm-12 col-md-6 col-lg-2 mb-4 mt-2 card-body"
                 >
-                  <Card
-                    _id={item._id}
-                    image={item.image}
-                    title={item.title}
-                    category={item.category}
-                  />
+                  <Card {...item} />
                   <h2 className="card-title">{item.title}</h2>
                 </div>
               ))}
             </>
           )}
 
-          {/* comedy Listings */}
+          {/* Comedy Listings */}
           {context.comedyListings?.length > 0 && (
             <>
               <Link
@@ -161,19 +146,14 @@ const Home = () => {
                   key={item._id}
                   className="col-sm-12 col-md-6 col-lg-2 mb-4 mt-2 card-body"
                 >
-                  <Card
-                    _id={item._id}
-                    image={item.image}
-                    title={item.title}
-                    category={item.category}
-                  />
+                  <Card {...item} />
                   <h2 className="card-title">{item.title}</h2>
                 </div>
               ))}
             </>
           )}
 
-          {/* kid Listings */}
+          {/* Kids Listings */}
           {context.kidListings?.length > 0 && (
             <>
               <Link
@@ -196,12 +176,7 @@ const Home = () => {
                   key={item._id}
                   className="col-sm-12 col-md-6 col-lg-2 mb-4 mt-2 card-body"
                 >
-                  <Card
-                    _id={item._id}
-                    image={item.image}
-                    title={item.title}
-                    category={item.category}
-                  />
+                  <Card {...item} />
                   <h2 className="card-title">{item.title}</h2>
                 </div>
               ))}

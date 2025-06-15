@@ -23,7 +23,11 @@ import Watchlist from "./pages/Watchlist";
 let MyContext = createContext();
 
 function App() {
-  const [currUser, setCurrUser] = useState(null);
+  const [currUser, setCurrUser] = useState(() => {
+    const storedUser = localStorage.getItem("currUser");
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
+
   const [loading, setLoading] = useState(true);
   const [marvelListings, setMarvelListings] = useState([]);
   const [historyListings, setHistoryListings] = useState([]);
@@ -67,6 +71,43 @@ function App() {
     setIsLoggedIn,
   };
 
+  // ✅ Restore session from localStorage
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const storedUser = localStorage.getItem("currUser");
+
+    if (token && storedUser) {
+      axiosInstance.defaults.headers.common[
+        "Authorization"
+      ] = `Bearer ${token}`;
+      try {
+        const user = JSON.parse(storedUser);
+        setCurrUser({
+          username: user.username,
+          _id: user._id,
+          watchlist: user.watchlist || [],
+        });
+        setIsLoggedIn(true);
+      } catch (err) {
+        console.error("Failed to parse stored user:", err);
+        localStorage.removeItem("token");
+        localStorage.removeItem("currUser");
+      }
+    }
+
+    setLoading(false);
+  }, []);
+
+  // ✅ Sync currUser to localStorage on change
+  useEffect(() => {
+    if (currUser) {
+      localStorage.setItem("currUser", JSON.stringify(currUser));
+    } else {
+      localStorage.removeItem("currUser");
+    }
+  }, [currUser]);
+
+  // Body scroll lock for Interface page
   useEffect(() => {
     const body = document.querySelector("body");
     if (interfacePage) {
@@ -74,71 +115,31 @@ function App() {
     } else {
       body.classList.remove("addOverflow");
     }
-
     return () => {
       body.classList.remove("addOverflow");
     };
   }, [interfacePage]);
 
+  // Auto-hide flash message
   useEffect(() => {
     if (flashMessage && !isManuallyClosed) {
-      console.log("Flash mounted");
       const timer = setTimeout(() => {
         setFlashMessage(null);
-        console.log("Flash message cleared");
       }, 8000);
-      return () => {
-        clearTimeout(timer);
-        console.log("Flash unmounted");
-      };
+      return () => clearTimeout(timer);
     }
   }, [flashMessage, isManuallyClosed]);
 
   useEffect(() => {
-    if (flashMessage) {
-      setIsManuallyClosed(false);
-    }
+    if (flashMessage) setIsManuallyClosed(false);
   }, [flashMessage]);
 
-  useEffect(() => {
-    const checkLoginStatus = async () => {
-      try {
-        const response = await axiosInstance.get(`/checkLoginStatusFlag`);
-        const data = response.data;
-        console.log(response);
-        console.log(data);
-        if (data.isLoggedIn) {
-          setIsLoggedIn(true);
-          setCurrUser({
-            username: data.user.username,
-            id: data.user._id,
-            watchlist: data.user.watchlist || [],
-          });
-        } else {
-          setIsLoggedIn(false);
-          setCurrUser(null);
-        }
-      } catch (error) {
-        console.error("Error checking login status:", error);
-        setIsLoggedIn(false);
-        setCurrUser(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-    checkLoginStatus();
-    const timer = setTimeout(() => {
-      checkLoginStatus();
-    }, 500);
-  }, []);
-
+  // Fetch all listings
   useEffect(() => {
     axiosInstance
       .get(`/listings`)
       .then((response) => {
         const data = response.data.listings;
-        console.log(response);
-        console.log(data);
         setMarvelListings(data.marvelListings || []);
         setHistoryListings(data.historyListings || []);
         setPopularMovieListings(data.popularMovieListings || []);
@@ -158,7 +159,6 @@ function App() {
     <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <MyContext.Provider value={values}>
         {showNavbar && <Navbar />}
-
         {flashMessage && (
           <Flash
             success={flashMessage.success}
@@ -169,7 +169,6 @@ function App() {
             }}
           />
         )}
-
         <Routes>
           <Route path="/" element={<Navigate to={"/listings"} replace />} />
           <Route path="/listings" element={<Home />} />
@@ -178,11 +177,10 @@ function App() {
           <Route path="/listings/:category" element={<Category />} />
           <Route path="/listings/:category/:id" element={<Interface />} />
           <Route path="/listings/:category/:id/video" element={<Video />} />
-          <Route path="/watchlist" element={<Watchlist />} />
+          <Route path="/:username/watchlist" element={<Watchlist />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
         </Routes>
-
         {showFooter && <Footer />}
       </MyContext.Provider>
     </Router>

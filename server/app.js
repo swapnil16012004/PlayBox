@@ -5,15 +5,12 @@ if (process.env.NODE_ENV != "production") {
 const express = require("express");
 const app = express();
 const path = require("path");
-const session = require("express-session");
-const passport = require("passport");
-const LocalStrategy = require("passport-local");
-const User = require("./models/UserModel");
-const methodOverride = require("method-override");
 const mongoose = require("mongoose");
-const MongoStore = require("connect-mongo");
+const methodOverride = require("method-override");
 const cors = require("cors");
 
+const User = require("./models/UserModel");
+const { isLoggedIn } = require("./middleware");
 const listingRouter = require("./services/ListingRoutes");
 const userRouter = require("./services/UserRoutes");
 
@@ -32,6 +29,7 @@ main()
   .catch((err) => {
     console.log(err);
   });
+
 async function main() {
   await mongoose.connect(MONGO_URL);
 }
@@ -40,12 +38,12 @@ const allowedOrigins = [
   "http://localhost:3000",
   "http://localhost:8080",
   process.env.FRONTEND_URL,
+  "chrome-extension://amknoiejhlmhancpahfcfcfhllgkpbld",
 ];
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Normalize the origin by removing trailing slashes
       const normalizedOrigin = origin ? origin.replace(/\/$/, "") : origin;
 
       console.log("Request Origin:", normalizedOrigin);
@@ -68,42 +66,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 
-const store = MongoStore.create({
-  mongoUrl: MONGO_URL,
-  crypto: {
-    secret: process.env.SECRET,
-  },
-  touchAfter: 24 * 3600,
-});
-
-const sessionOptions = {
-  secret: process.env.SECRET,
-  resave: false,
-  saveUninitialized: true,
-  cookie: {
-    expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
-    maxAge: 7 * 24 * 60 * 60 * 1000,
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
-  },
-  store,
-};
-
-app.use(session(sessionOptions));
-app.use(passport.initialize());
-app.use(passport.session());
-passport.use(new LocalStrategy(User.authenticate()));
-
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
-
-app.use((req, res, next) => {
-  res.locals.currUser = req.user;
-  next();
-});
-
+// ✅ Use middleware only on protected routes
 app.use("/api/listings", listingRouter);
+
+// ✅ Leave open routes unprotected
 app.use("/api", userRouter);
 
 app.get("/", (req, res) => {
@@ -112,6 +78,7 @@ app.get("/", (req, res) => {
 
 app.get("/favicon.ico", (req, res) => res.status(204).end());
 
+// ✅ Error handler
 app.use((err, req, res, next) => {
   let { statusCode = 500, message = "Something went wrong!" } = err;
   res.status(statusCode).json({ message });

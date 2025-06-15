@@ -11,7 +11,7 @@ const {
 const multer = require("multer");
 const { storage } = require("../../cloudConfig.js");
 const upload = multer({ storage });
-const { isLoggedIn } = require("../../middleware.js");
+const { isLoggedIn, isAdmin } = require("../../middleware.js");
 
 const models = {
   marvel: Marvel,
@@ -63,13 +63,15 @@ router.get("/search", async (req, res) => {
   }
 });
 
-router.get("/new/:show", isLoggedIn, async (req, res) => {
+// ✅ Admin only - Show new listing form
+router.get("/new/:show", isAdmin, async (req, res) => {
   const { show } = req.params;
   if (!models[show]) {
     return res
       .status(400)
       .json({ success: false, message: "Invalid category" });
   }
+  res.json({ success: true, message: `Access granted to create new ${show}` });
 });
 
 // Add a new listing
@@ -141,12 +143,6 @@ router.get("/:category/:id", async (req, res) => {
     return res
       .status(400)
       .json({ success: false, message: "Invalid category" });
-  }
-
-  if (!mongoose.isValidObjectId(id)) {
-    return res
-      .status(400)
-      .json({ success: false, message: "Invalid ID format" });
   }
 
   if (!mongoose.isValidObjectId(id)) {

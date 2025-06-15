@@ -1,66 +1,12 @@
-// const SignUp = () => {
-//   return (
-//     <div class="row mt-5 signup-color">
-//       <h1 class="col-6 offset-3">Signup on Gostream</h1>
-//       <div class="col-6 offset-3">
-//         <form
-//           action="/signup"
-//           method="post"
-//           novalidate
-//           class="needs-validation"
-//         >
-//           <div class="mb-3">
-//             <label for="username" class="form-label">
-//               Username
-//             </label>
-//             <input
-//               type="text"
-//               name="username"
-//               class="form-control"
-//               id="username"
-//               required
-//             />
-//             <div class="valid-feedback">Looks good!</div>
-//           </div>
-//           <div class="mb-3">
-//             <label for="email" class="form-label">
-//               Email
-//             </label>
-//             <input
-//               type="email"
-//               name="email"
-//               class="form-control"
-//               id="email"
-//               required
-//             />
-//           </div>
-//           <div class="mb-3">
-//             <label for="password" class="form-label">
-//               Password
-//             </label>
-//             <input
-//               type="password"
-//               name="password"
-//               class="form-control"
-//               id="password"
-//               required
-//             />
-//           </div>
-//           <button class="btn bttn btn-outlined">SignUp</button>
-//         </form>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default SignUp;
-
-import { useState } from "react";
+import { useState, useContext } from "react";
 import axiosInstance from "../../../axiosConfig";
 import { useNavigate } from "react-router-dom";
+import { MyContext } from "../../../App";
 
 const SignUp = () => {
   const navigate = useNavigate();
+  const context = useContext(MyContext);
+
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -76,12 +22,31 @@ const SignUp = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    context.setIsSubmitting(true);
     try {
       const response = await axiosInstance.post(`/signup`, formData);
-      console.log("Signup successful:", response.data);
-      navigate("/listings");
+      const data = response.data;
+
+      // ✅ Store token and user
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("currUser", JSON.stringify(data.user));
+
+      context.setFlashMessage({ success: true, message: data.message });
+      context.setCurrUser(data.user.username);
+      context.setIsLoggedIn(true);
+
+      setTimeout(() => {
+        navigate(data.redirectUrl || "/listings");
+      }, 100);
     } catch (error) {
       console.error("Signup failed:", error.response?.data || error.message);
+      context.setFlashMessage({
+        success: false,
+        message:
+          error.response?.data?.message || "Signup failed. Try again later.",
+      });
+    } finally {
+      context.setIsSubmitting(false);
     }
   };
 
